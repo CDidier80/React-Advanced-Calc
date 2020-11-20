@@ -10,6 +10,7 @@ const Calculator = props => {
     const operators = [...uniqueOperators, "%", "/", "x", "-", "+"]
     
     const buttonClick = (buttonValue) => {
+
         const valueIsAnOperator = operators.includes(buttonValue)
         const displayIsEmpty = display.length === 0 
         const lastNumberIsAnOperator = operators.includes(display[display.length-1])
@@ -29,8 +30,6 @@ const Calculator = props => {
             case "AC":
                 setDisplay("")
                 break
-
-            // 
             case "+/-":
                 if (display.length === 0) 
                     break
@@ -50,15 +49,36 @@ const Calculator = props => {
                 // The + and - have swapped places. 
                 break // roger roger
             case "=":
-                setDisplay(eval(display))
+                let displayCopy = display
+                displayCopy = displayCopy.replaceAll("x", "*")
+                setDisplay(eval(displayCopy))
+                break
             default:
                 return 
         }
     }
 
     // Hi Adam || Michael. I've got such a spicy one-liner for you. <3 
-    return <div className="container"><h1>React Calculator</h1><div className="calc-container"><p>{display}</p><div className="answer-box">TBD</div>{rowsWithButtonValues.map((row, index) => (<div className="calc-row">  {row.map((button, nestedIndex) => (index !== 4 ?<button key={`${index}${nestedIndex}`} onClick={uniqueOperators.includes(button) ? ()=> uniqueOps(button) : ()=>buttonClick(button)} className={nestedIndex !== 3 ? "calc-button" : "calc-button calc-button-op"}>{button}</button> : <button key={`${index}${nestedIndex}`} onClick={uniqueOperators.includes(button[1]) ? ()=> uniqueOps(button[1]) : ()=>buttonClick(button[1])} className={button[0]}>{button[1]}</button>))}</div>))}</div></div>
-            
+    return (
+        <div className="container">
+        <h1>React Calculator</h1>
+            <div className="calc-container">
+                <p>{display}</p>
+                <div className="answer-box">TBD</div>
+                {rowsWithButtonValues.map((row, index) => (
+                    <div className="calc-row">  
+                        {row.map((button, nestedIndex) => (
+                            // the 5th row is a bit different, so I'll give them special treatment in a ternary
+                            index !== 4 ?
+                            // Button clicks add the button's value directly to the arithmetic expression, except for unique operator's whose clicks are handled by uniqueOps()
+                            <button key={`${index}${nestedIndex}`} onClick={uniqueOperators.includes(button) ? ()=> uniqueOps(button) : ()=>buttonClick(button)} className={nestedIndex !== 3 ? "calc-button" : "calc-button calc-button-op"}>{button}</button> 
+                            : 
+                            <button key={`${index}${nestedIndex}`} onClick={uniqueOperators.includes(button[1]) ? ()=> uniqueOps(button[1]) : ()=>buttonClick(button[1])} className={button[0]}>{button[1]}</button>))}
+                    </div>
+                ))}
+            </div>
+        </div>
+    )    
 }
 
 export default Calculator
